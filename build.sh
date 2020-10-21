@@ -7,3 +7,5 @@ cp -f bootstrap/wpa_supplicant.conf.tomasz releases/build_2.0.1-tomasz/vfat/boot
 
 mkdir -p releases/build_2.0.1-tomasz/ext2
 cp -r -f data releases/build_2.0.1-tomasz/ext2/data/
+chown -R root releases/build_2.0.1-tomasz/ext2/data/
+chgrp -R root releases/build_2.0.1-tomasz/ext2/data/
