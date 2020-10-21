@@ -3,7 +3,10 @@
 # Set serial number (MAC address) as default hostname
 echo "Set hostname ..."
 if [ ! -f /etc/hostname ]; then
-        echo "iSmartAlarm" > /etc/hostname
+        # A very simple and stupid solution
+        # Wait 300 seconds for WiFi to connect
+        # Parse IP address, use last digits and the word 'camera'        
+        sleep 300 && echo 'camera'`ifconfig | grep 'inet addr' | grep -v '127.0.0.1' | awk '{print $2}' | awk -F '.' '{print $4}'` > /etc/hostname && /bin/hostname -F /etc/hostname &
 fi
 /bin/hostname -F /etc/hostname
 
