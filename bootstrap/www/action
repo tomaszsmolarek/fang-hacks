@@ -152,7 +152,7 @@ if [ -n "$F_cmd" ]; then
       echo "Setting TZ to '$tz'...<br/>"
       echo "$tz" > /etc/TZ
       echo "Syncing time...<br/>"                                                         
-      /usr/sbin/ntpd -q -n -p time.google.com 2>&1
+      /usr/sbin/ntpd -q -n -p 10.1.0.1 2>&1
     fi
     hst=$(printf '%b' "${F_hostname//%/\\x}")
     if [ $(cat /etc/hostname) != "$hst" ]; then
