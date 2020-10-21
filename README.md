@@ -1,10 +1,10 @@
 # Tomasz
 
-Forked from samtap/fang-hacks with all the latest fixes which were there in the repo but were not merged or didn't make the 0.2.0 release *plus* my own customizations for _my_ setup (like hardcoded IP of local NTPD server).
+Forked from `samtap/fang-hacks` with all the latest fixes which were there in the repo but were not merged or didn't make the 0.2.0 release *plus* my own customizations for _my_ setup (like hardcoded IP of local NTPD server).
 
 How to:
 
-1. Clone repo (make sure you use a Unix system - there are symlinks there)
+1. Clone repo, branch `0.2.1-tomasz2` (make sure you use a Unix system - there are symlinks there)
 2. Add file `fang-hacks/bootstrap/wpa_supplicant.conf.tomasz` with config
 3. Run `sudo ./build.sh`
 4. Copy files to 2 partitions on SD, according to the original README (below)
