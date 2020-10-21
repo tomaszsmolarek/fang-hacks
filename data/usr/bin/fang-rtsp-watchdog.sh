@@ -10,6 +10,7 @@ do
                echo "RTSP ON"
         else
                echo "RTSP OFF"
+               echo "RTSP Watchdog had to restart snx_rtsp_server "`date` >> /tmp/fang-rtsp-watchdog.log
                /media/mmcblk0p2/data/etc/scripts/20-rtsp-server start > /dev/null
         fi
 done
