@@ -15,8 +15,12 @@ start()
   echo "Starting RTSP server..."
   snx_rtsp_server -a >$LOG 2>&1 &
   echo "$!" > "$PIDFILE"
+  # Enable OSD with date time
   ./snx_isp_ctl --osdset-en 1 --osdset-ts 1 --osdset-template 1234567890./-:Date --osdset-gain 2 --osdset-bgtransp 0x1 --osdset-bgcolor 0x000000
+  # No image rotation
   ./snx_isp_ctl --mfset-mode 0  
+  # No Motion Detection
+  ./snx_isp_ctl --mdset-en 0
 }
 
 stop()
