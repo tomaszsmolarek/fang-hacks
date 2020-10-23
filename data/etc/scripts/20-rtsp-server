@@ -13,7 +13,7 @@ start()
 {
   LOG=/dev/null
   echo "Starting RTSP server..."
-  snx_rtsp_server -a >$LOG 2>&1 &
+  snx_rtsp_server -F 25 -i 25 -W 1920 -H 1080 -b 3072 -A test:abc -a >$LOG 2>&1 &
   echo "$!" > "$PIDFILE"
   # Enable OSD with date time
   ./snx_isp_ctl --osdset-en 1 --osdset-ts 1 --osdset-template 1234567890./-:Date --osdset-gain 2 --osdset-bgtransp 0x1 --osdset-bgcolor 0x000000
