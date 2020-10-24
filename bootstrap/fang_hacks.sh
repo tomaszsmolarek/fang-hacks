@@ -155,7 +155,7 @@ fi
 # Configuration files are located on vfat to allow off-line editing in any OS.
 # Note: originals are removed or they would overwrite any changes made in the webif,
 # each time the script runs!
-for i in wpa_supplicant.conf hostapd.conf udhcpd.conf; do
+for i in wpa_supplicant.conf rtsp.passwd hostapd.conf udhcpd.conf; do
   src="/media/mmcblk0p1/bootstrap/$i"
   tgt="/media/mmcblk0p2/data/etc/$i"
   if [ -e "/media/mmcblk0p1/bootstrap/$i" ]; then
