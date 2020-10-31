@@ -18,3 +18,7 @@ echo 5 > /proc/sys/net/ipv4/tcp_keepalive_intvl
 if [ -x "/etc/fang_hacks.sh" ]; then
     /etc/fang_hacks.sh
 fi
+
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
