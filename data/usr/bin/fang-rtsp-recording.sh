@@ -2,41 +2,66 @@
 
 while :
 do
-	currentdt=`date -u '+%F_%H%M%S'_UTC`
-	log="/media/mmcblk0p2/data/recordings_logs/$currentdt.log"
-	rec_log="/media/mmcblk0p2/data/recordings_logs/$currentdt-rec.log"
-	rec_err_log="/media/mmcblk0p2/data/recordings_logs/$currentdt-rec.err"
-	record_folder="/media/mmcblk0p2/data/recordings_wip/"
-	record_to="$record_folder$currentdt.mkv"
-	dest_folder="/media/mmcblk0p2/data/recordings/"
-	move_to="$dest_folder$currentdt.mkv"
+	CURRENTDT=`date -u '+%F_%H%M%S'_UTC`
+	LOGS_FOLDER="/media/mmcblk0p2/data/recordings_logs/"
+	LOG="$LOGS_FOLDER$CURRENTDT.log"
+	REC_LOG="$LOGS_FOLDER$CURRENTDT-rec.log"
+	REC_ERR_LOG="$LOGS_FOLDER$CURRENTDT-rec.err"
+	RECORD_FOLDER="/media/mmcblk0p2/data/recordings_wip/"
+	RECORD_TO="$RECORD_FOLDER$CURRENTDT.mkv"
+	DEST_FOLDER="/media/mmcblk0p2/data/recordings/"
+	DEST_TO="$DEST_FOLDER$CURRENTDT.mkv"
 
-	touch $log
-	touch $rec_log
-	touch $rec_err_log
+	FREE_SDCARD_SPACE_KB=`df /dev/mmcblk0p2 | tail -n 1 | awk '{print $4}'`
 
-	echo "$currentdt Will move all incomplete recordings from $record_folder to $dest_folder" >> $log 
-	tmp_move_src="$record_folder*"
-	mv $tmp_move_src $dest_folder
+	RECORDING_TIME_SEC=300
+	OLD_FILES_PURGE_DAYS=14
+	HDD_SPACE_THRESHOLD_KB=51200
+
+	touch $LOG
+	touch $REC_LOG
+	touch $REC_ERR_LOG
+
+	echo "$CURRENTDT Will move all incomplete recordings from $RECORD_FOLDER to $DEST_FOLDER" >> $LOG 
+	tmp_move_src="$RECORD_FOLDER*"
+	mv $tmp_move_src $DEST_FOLDER >> $LOG 2>&1
+
+	echo "$CURRENTDT Will remove files older than $OLD_FILES_PURGE_DAYS days from $LOGS_FOLDER" >> $LOG 
+	tmp_purge_src="$LOGS_FOLDER*"
+	find $tmp_purge_src -mtime +$OLD_FILES_PURGE_DAYS -type f -print >> $LOG 2>&1
+	find $tmp_purge_src -mtime +$OLD_FILES_PURGE_DAYS -type f -exec rm {} \; >> $LOG 2>&1
+
+	echo "$CURRENTDT Will remove files older than $OLD_FILES_PURGE_DAYS days from $DEST_FOLDER" >> $LOG 
+	tmp_purge_src2="$DEST_FOLDER*"
+	find $tmp_purge_src2 -mtime +$OLD_FILES_PURGE_DAYS -type f -print >> $LOG 2>&1
+	find $tmp_purge_src2 -mtime +$OLD_FILES_PURGE_DAYS -type f -exec rm {} \; >> $LOG 2>&1
+
+	if [ "$FREE_SDCARD_SPACE_KB" -ge "$HDD_SPACE_THRESHOLD_KB" ]; then
+		echo "$CURRENTDT Will start recording because SD CARD space is $FREE_SDCARD_SPACE_KB KB and that's >= limit, i.e. $HDD_SPACE_THRESHOLD_KB KB" >> $LOG
+	else
+		echo "$CURRENTDT There's not enough space on SD CARD! Will NOT record. Free space is $FREE_SDCARD_SPACE_KB KB, need $HDD_SPACE_THRESHOLD_KB KB. Will sleep 60 sec and exit" >> $LOG
+		sleep 60
+		exit 1
+	fi
 
 	auth=$(cat /media/mmcblk0p2/data/etc/rtsp.passwd)
 	if [ "$auth" ]; then
-		echo "$currentdt Starting ffmpeg recording with auth" >> $log
-		/media/mmcblk0p2/data/test/ffmpeg/ffmpeg -loglevel warning -i rtsp://$auth@127.0.0.1/unicast -vcodec copy -acodec copy -y -t 300 $record_to >> $rec_log 2>> $rec_err_log
+		echo "$CURRENTDT Starting ffmpeg recording with auth" >> $LOG
+		/media/mmcblk0p2/data/test/ffmpeg/ffmpeg -loglevel warning -i rtsp://$auth@127.0.0.1/unicast -vcodec copy -acodec copy -y -t $RECORDING_TIME_SEC $RECORD_TO >> $REC_LOG 2>> $REC_ERR_LOG
 	else
-		echo "$currentdt Starting ffmpeg recording without auth" >> $log
-		/media/mmcblk0p2/data/test/ffmpeg/ffmpeg -loglevel warning -i rtsp://127.0.0.1/unicast -vcodec copy -acodec copy -y -t 300 $record_to >> $rec_log 2>> $rec_err_log
+		echo "$CURRENTDT Starting ffmpeg recording without auth" >> $LOG
+		/media/mmcblk0p2/data/test/ffmpeg/ffmpeg -loglevel warning -i rtsp://127.0.0.1/unicast -vcodec copy -acodec copy -y -t $RECORDING_TIME_SEC $RECORD_TO >> $REC_LOG 2>> $REC_ERR_LOG
 	fi
 
 	if [ "$?" -ne "0" ]; 
 	then
-		echo "$currentdt Recording with ffmpeg finished with errors, will sleep 10" >> $log
+		echo "$CURRENTDT Recording with ffmpeg finished with ERRORS, will sleep 10 and continue" >> $LOG
 		sleep 10
 	else
-		echo "$currentdt Recording with ffmpeg finished OK" >> $log
+		echo "$CURRENTDT Recording with ffmpeg finished OK" >> $LOG
 	fi
 
-	mv $record_to $move_to
-	echo "$currentdt Moved file from $record_to to $move_to" >> $log
+	mv $RECORD_TO $DEST_TO
+	echo "$CURRENTDT Moved file from $RECORD_TO to $DEST_TO" >> $LOG
 
 done
