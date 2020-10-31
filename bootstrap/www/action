@@ -104,6 +104,12 @@ if [ -n "$F_cmd" ]; then
     cat /tmp/hacks.log
     echo "</pre>"
     ;;
+  showrecordings)
+    echo "Contents of /media/mmcblk0p2/data/recordings:<br/>"
+    echo "<pre>"
+    ls -ahl /media/mmcblk0p2/data/recordings
+    echo "</pre>"
+    ;;
   showmessages)                                                                 
     echo "Contents of /var/log/messages:<br/>"                                  
     echo "<pre>"                                                                
