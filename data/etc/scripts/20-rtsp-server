@@ -16,10 +16,10 @@ start()
   auth=$(cat /media/mmcblk0p2/data/etc/rtsp.passwd)
   if [ "$auth" ]; then
     echo "... with auth"
-    snx_rtsp_server -A "$auth" -g 24 -F 24 -i 24 -W 1280 -H 720 -b 512 -a >$LOG 2>&1 &
+    snx_rtsp_server -A "$auth" -g 24 -F 12 -i 24 -W 1280 -H 720 -b 512 -a >$LOG 2>&1 &
   else
     echo "... without auth"
-    snx_rtsp_server -g 24 -F 24 -i 24 -W 1280 -H 720 -b 512 -a >$LOG 2>&1 &
+    snx_rtsp_server -g 24 -F 12 -i 24 -W 1280 -H 720 -b 512 -a >$LOG 2>&1 &
   fi
   echo "$!" > "$PIDFILE"
   # Enable OSD with date time
