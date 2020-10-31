@@ -1,13 +1,13 @@
 #!/bin/sh
 
-# Set serial number (MAC address) as default hostname
-echo "Set hostname ..."
-/bin/hostname -F /etc/hostname
+has_ip()
+{
+  ifconfig wlan0 | grep -c inet
+}
 
-# A very simple and stupid solution
-# Wait 300 seconds for WiFi to connect
-# Parse IP address, use last digits and the word 'camera'        
-sleep 300 && echo 'camera'`ifconfig | grep 'inet addr' | grep -v '127.0.0.1' | awk '{print $2}' | awk -F '.' '{print $4}'` > /etc/hostname && /bin/hostname -F /etc/hostname &
+echo "Set default hostname..."
+echo "cameraz" > /etc/hostname
+/bin/hostname -F /etc/hostname
 
 ifconfig lo up
 
@@ -19,6 +19,11 @@ if [ -x "/etc/fang_hacks.sh" ]; then
     /etc/fang_hacks.sh
 fi
 
-alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
+while [ $(has_ip) -eq 0 ]; do
+    echo "No IP yet, waiting..."    
+    sleep 3
+done
+
+ip_part=`ifconfig wlan0 | grep inet | grep -Eo 'inet addr:(.*)Bcast' | grep -Eo '[0-9]+[.][0-9]+[.][0-9]+[.][0-9]+' | grep -Eo '[0-9]+$'`
+ip_hostname="camera$ip_part"
+echo $ip_hostname > /etc/hostname && /bin/hostname -F /etc/hostname &
