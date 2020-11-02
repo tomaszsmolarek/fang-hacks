@@ -105,9 +105,13 @@ if [ -n "$F_cmd" ]; then
     echo "</pre>"
     ;;
   showrecordings)
+    echo "SD CARD usage (/media/mmcblk0p2):<br/>"
+    echo "<pre>"
+    df -h /dev/mmcblk0p2
+    echo "</pre>"    
     echo "Contents of /media/mmcblk0p2/data/recordings:<br/>"
     echo "<pre>"
-    ls -ahl /media/mmcblk0p2/data/recordings
+    ls -Ahltr /media/mmcblk0p2/data/recordings
     echo "</pre>"
     ;;
   showmessages)                                                                 
