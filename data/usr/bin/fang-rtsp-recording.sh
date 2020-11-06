@@ -16,7 +16,7 @@ do
 
 	RECORDING_TIME_SEC=300
 	OLD_FILES_PURGE_DAYS=14
-	HDD_SPACE_THRESHOLD_KB=51200
+	HDD_SPACE_THRESHOLD_KB=102400
 
 	touch $LOG
 	touch $REC_LOG
@@ -27,21 +27,20 @@ do
 	mv $tmp_move_src $DEST_FOLDER >> $LOG 2>&1
 
 	echo "$CURRENTDT Will remove files older than $OLD_FILES_PURGE_DAYS days from $LOGS_FOLDER" >> $LOG 
-	tmp_purge_src="$LOGS_FOLDER*"
-	find $tmp_purge_src -mtime +$OLD_FILES_PURGE_DAYS -type f -print >> $LOG 2>&1
-	find $tmp_purge_src -mtime +$OLD_FILES_PURGE_DAYS -type f -exec rm {} \; >> $LOG 2>&1
+	find $LOGS_FOLDER -mtime +$OLD_FILES_PURGE_DAYS -type f -print >> $LOG 2>&1
+	find $LOGS_FOLDER -mtime +$OLD_FILES_PURGE_DAYS -type f -exec rm {} \; >> $LOG 2>&1
 
 	echo "$CURRENTDT Will remove files older than $OLD_FILES_PURGE_DAYS days from $DEST_FOLDER" >> $LOG 
-	tmp_purge_src2="$DEST_FOLDER*"
-	find $tmp_purge_src2 -mtime +$OLD_FILES_PURGE_DAYS -type f -print >> $LOG 2>&1
-	find $tmp_purge_src2 -mtime +$OLD_FILES_PURGE_DAYS -type f -exec rm {} \; >> $LOG 2>&1
+	find $DEST_FOLDER -mtime +$OLD_FILES_PURGE_DAYS -type f -print >> $LOG 2>&1
+	find $DEST_FOLDER -mtime +$OLD_FILES_PURGE_DAYS -type f -exec rm {} \; >> $LOG 2>&1
 
 	if [ "$FREE_SDCARD_SPACE_KB" -ge "$HDD_SPACE_THRESHOLD_KB" ]; then
 		echo "$CURRENTDT Will start recording because SD CARD space is $FREE_SDCARD_SPACE_KB KB and that's >= limit, i.e. $HDD_SPACE_THRESHOLD_KB KB" >> $LOG
 	else
-		echo "$CURRENTDT There's not enough space on SD CARD! Will NOT record. Free space is $FREE_SDCARD_SPACE_KB KB, need $HDD_SPACE_THRESHOLD_KB KB. Will sleep 60 sec and exit" >> $LOG
-		sleep 60
-		exit 1
+		echo "$CURRENTDT There's not enough space on SD CARD! Free space is $FREE_SDCARD_SPACE_KB KB, need $HDD_SPACE_THRESHOLD_KB KB" >> $LOG
+		OLDEST_FILE=`ls -t $DEST_FOLDER | tail -1`
+		echo "$CURRENTDT Will delete oldest file ($DEST_FOLDER/$OLDEST_FILE) and continue recording" >> $LOG
+		rm $OLDEST_FILE
 	fi
 
 	auth=$(cat /media/mmcblk0p2/data/etc/rtsp.passwd)
