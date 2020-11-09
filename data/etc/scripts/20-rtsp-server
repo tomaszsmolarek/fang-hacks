@@ -11,15 +11,24 @@ status()
 
 start()
 {
+  USE_NEW_VER=true
+
+  if [ "$USE_NEW_VER" = true ] ; then
+    echo "Will use new binary for RTSP server (github.com/davidjb)"
+    RTSP_BIN="LD_LIBRARY_PATH=/media/mmcblk0p2/data/updates/snx_rtsp_server/lib /media/mmcblk0p2/data/updates/snx_rtsp_server/bin/snx_rtsp_server"
+  else
+    echo "Will use old binary for RTSP server (github.com/samtap)"
+    RTSP_BIN="snx_rtsp_server"  
+  fi
   LOG=/dev/null
   echo "Starting RTSP server..."
   auth=$(cat /media/mmcblk0p2/data/etc/rtsp.passwd)
   if [ "$auth" ]; then
     echo "... with auth"
-    snx_rtsp_server -A "$auth" -g 24 -F 12 -i 24 -W 1280 -H 720 -b 512 -a >$LOG 2>&1 &
+    $RTSP_BIN -A "$auth" -g 24 -F 12 -i 24 -W 1280 -H 720 -b 512 -a >$LOG 2>&1 &
   else
     echo "... without auth"
-    snx_rtsp_server -g 24 -F 12 -i 24 -W 1280 -H 720 -b 512 -a >$LOG 2>&1 &
+    $RTSP_BIN -g 24 -F 12 -i 24 -W 1280 -H 720 -b 512 -a >$LOG 2>&1 &
   fi
   echo "$!" > "$PIDFILE"
   # Enable OSD with date time
