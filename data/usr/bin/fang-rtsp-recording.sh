@@ -18,7 +18,7 @@ do
 
 	RECORDING_TIME_SEC=300
 	OLD_FILES_PURGE_DAYS=14
-	HDD_SPACE_THRESHOLD_KB=102400
+	HDD_SPACE_THRESHOLD_KB=204800
 
 	echo "$CURRENTDT Will remove empty folders from $LOGS_FOLDER_BASE and $RECORD_FOLDER and $DEST_FOLDER" >> $LOG 
 	find $LOGS_FOLDER_BASE -type d -exec rmdir {} + 2>/dev/null
