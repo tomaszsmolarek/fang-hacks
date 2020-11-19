@@ -20,7 +20,7 @@ start()
 
     auth=$(cat /media/mmcblk0p2/data/etc/rtsp.passwd)
     if [ "$auth" ]; then
-      auth_switch="-A \"$auth\""
+      auth_switch="-A $auth"
       echo "... with auth"
     else
       echo "... without auth"
