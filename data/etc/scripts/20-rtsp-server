@@ -20,7 +20,7 @@ start()
 
     auth=$(cat /media/mmcblk0p2/data/etc/rtsp.passwd)
     if [ "$auth" ]; then
-      $auth_switch="-A \"$auth\""
+      auth_switch="-A \"$auth\""
       echo "... with auth"
     else
       echo "... without auth"
@@ -33,8 +33,10 @@ start()
 
   LOG="/dev/null"
   echo "Starting RTSP server..."
+
   $RTSP_BIN $auth_switch -g 24 -F 12 -i 24 -W 1280 -H 720 -b 512 -a >>$LOG 2>&1 &
   echo "$!" > "$PIDFILE"
+  echo "RTSP server PID read from pid file $(cat "$PIDFILE")"
 
   # RTSP server is not very fast, hence the sleep for first command
   # Enable OSD with date time
