@@ -12,31 +12,38 @@ status()
 start()
 {
   USE_NEW_VER=true
+  auth_switch=""
 
   if [ "$USE_NEW_VER" = true ] ; then
-    echo "Will use new binary for RTSP server (github.com/davidjb)"
-    RTSP_BIN="LD_LIBRARY_PATH=/media/mmcblk0p2/data/updates/snx_rtsp_server/lib /media/mmcblk0p2/data/updates/snx_rtsp_server/bin/snx_rtsp_server"
+    echo "Will use new binary for RTSP server (github.com/davidjb)..."
+    RTSP_BIN="env LD_LIBRARY_PATH=/media/mmcblk0p2/data/updates/snx_rtsp_server/lib /media/mmcblk0p2/data/updates/snx_rtsp_server/usr/bin/snx_rtsp_server"
+
+    auth=$(cat /media/mmcblk0p2/data/etc/rtsp.passwd)
+    if [ "$auth" ]; then
+      $auth_switch="-A \"$auth\""
+      echo "... with auth"
+    else
+      echo "... without auth"
+    fi
   else
-    echo "Will use old binary for RTSP server (github.com/samtap)"
+    echo "Will use old binary for RTSP server (github.com/samtap)..."
+    echo "... without auth"
     RTSP_BIN="snx_rtsp_server"  
   fi
-  LOG=/dev/null
+
+  LOG="/dev/null"
   echo "Starting RTSP server..."
-  auth=$(cat /media/mmcblk0p2/data/etc/rtsp.passwd)
-  if [ "$auth" ]; then
-    echo "... with auth"
-    $RTSP_BIN -A "$auth" -g 24 -F 12 -i 24 -W 1280 -H 720 -b 512 -a >$LOG 2>&1 &
-  else
-    echo "... without auth"
-    $RTSP_BIN -g 24 -F 12 -i 24 -W 1280 -H 720 -b 512 -a >$LOG 2>&1 &
-  fi
+  $RTSP_BIN $auth_switch -g 24 -F 12 -i 24 -W 1280 -H 720 -b 512 -a >>$LOG 2>&1 &
   echo "$!" > "$PIDFILE"
+
+  # RTSP server is not very fast, hence the sleep for first command
   # Enable OSD with date time
-  snx_isp_ctl --osdset-en 1 --osdset-ts 1 --osdset-template 1234567890./-:Date --osdset-gain 1 --osdset-bgtransp 0x1 --osdset-bgcolor 0x000000
+  sleep 3 && snx_isp_ctl --osdset-en 1 --osdset-ts 1 --osdset-template 1234567890./-:Date --osdset-gain 1 --osdset-bgtransp 0x1 --osdset-bgcolor 0x000000
   # No image rotation
   snx_isp_ctl --mfset-mode 0  
   # No Motion Detection
   snx_isp_ctl --mdset-en 0
+  echo "All started"
 }
 
 stop()
@@ -55,4 +62,3 @@ else
     ;;
   esac
 fi
-
