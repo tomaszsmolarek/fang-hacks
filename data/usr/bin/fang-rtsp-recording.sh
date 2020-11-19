@@ -48,7 +48,7 @@ do
 		echo "$CURRENTDT Will start recording because SD CARD space is $FREE_SDCARD_SPACE_KB KB and that's >= limit, i.e. $HDD_SPACE_THRESHOLD_KB KB" >> $LOG
 	else
 		echo "$CURRENTDT There's not enough space on SD CARD! Free space is $FREE_SDCARD_SPACE_KB KB, need $HDD_SPACE_THRESHOLD_KB KB" >> $LOG
-		OLDEST_FILE=`ls -t $DEST_FOLDER | tail -1`
+		OLDEST_FILE=`ls -1t $DEST_FOLDER | tail -1`
 		echo "$CURRENTDT Will delete oldest file ($DEST_FOLDER$OLDEST_FILE) and continue recording" >> $LOG
 		rm -f $DEST_FOLDER$OLDEST_FILE >> $LOG 2>&1
 	fi
