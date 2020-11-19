@@ -38,9 +38,8 @@ start()
   echo "$!" > "$PIDFILE"
   echo "RTSP server PID read from pid file $(cat "$PIDFILE")"
 
-  # RTSP server is not very fast, hence the sleep for first command
   # Enable OSD with date time
-  sleep 3 && snx_isp_ctl --osdset-en 1 --osdset-ts 1 --osdset-template 1234567890./-:Date --osdset-gain 1 --osdset-bgtransp 0x1 --osdset-bgcolor 0x000000
+  snx_isp_ctl --osdset-en 1 --osdset-ts 1 --osdset-template 1234567890./-:Date --osdset-gain 1 --osdset-bgtransp 0x1 --osdset-bgcolor 0x000000
   # No image rotation
   snx_isp_ctl --mfset-mode 0  
   # No Motion Detection
