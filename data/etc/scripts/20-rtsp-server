@@ -11,7 +11,7 @@ status()
 
 start()
 {
-  USE_NEW_VER=true
+  USE_NEW_VER=false
   auth_switch=""
 
   if [ "$USE_NEW_VER" = true ] ; then
