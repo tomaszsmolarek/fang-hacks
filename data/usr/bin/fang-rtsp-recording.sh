@@ -12,9 +12,7 @@ do
 	RECORD_FOLDER="/media/mmcblk0p2/data/recordings_wip/"
 	RECORD_TO="$RECORD_FOLDER$CURRENTDT.mkv"
 	DEST_FOLDER="/media/mmcblk0p2/data/recordings/"
-	DEST_TO="$DEST_FOLDER$CURRENTDT.mkv"
-
-	FREE_SDCARD_SPACE_KB=`df /dev/mmcblk0p2 | tail -n 1 | awk '{print $4}'`
+	DEST_TO="$DEST_FOLDER$CURRENTDT.mkv"	
 
 	RECORDING_TIME_SEC=300
 	OLD_FILES_PURGE_DAYS=14
@@ -44,15 +42,15 @@ do
 	find $DEST_FOLDER -mtime +$OLD_FILES_PURGE_DAYS -type f -print >> $LOG 2>&1
 	find $DEST_FOLDER -mtime +$OLD_FILES_PURGE_DAYS -type f -exec rm {} \; >> $LOG 2>&1
 
-	if [ "$FREE_SDCARD_SPACE_KB" -ge "$HDD_SPACE_THRESHOLD_KB" ]; then
-		echo "$CURRENTDT Will start recording because SD CARD space is $FREE_SDCARD_SPACE_KB KB and that's >= limit, i.e. $HDD_SPACE_THRESHOLD_KB KB" >> $LOG
-	else
+	FREE_SDCARD_SPACE_KB=`df /dev/mmcblk0p2 | tail -n 1 | awk '{print $4}'`
+
+	while [ "$FREE_SDCARD_SPACE_KB" -le "$HDD_SPACE_THRESHOLD_KB" ]; do
 		echo "$CURRENTDT There's not enough space on SD CARD! Free space is $FREE_SDCARD_SPACE_KB KB, need $HDD_SPACE_THRESHOLD_KB KB" >> $LOG
 		OLDEST_FILE=`ls -1t $DEST_FOLDER | tail -1`
-		echo "$CURRENTDT Will delete oldest file ($DEST_FOLDER$OLDEST_FILE) and quit. The script will restart" >> $LOG
+		echo "$CURRENTDT Will delete oldest file ($DEST_FOLDER$OLDEST_FILE) and retry" >> $LOG
 		rm -f $DEST_FOLDER$OLDEST_FILE >> $LOG 2>&1
-		exit 0
-	fi
+		FREE_SDCARD_SPACE_KB=`df /dev/mmcblk0p2 | tail -n 1 | awk '{print $4}'`
+	done
 
 	auth=$(cat /media/mmcblk0p2/data/etc/rtsp.passwd)
 	if [ "$auth" ]; then
