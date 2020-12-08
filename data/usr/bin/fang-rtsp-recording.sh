@@ -49,8 +49,9 @@ do
 	else
 		echo "$CURRENTDT There's not enough space on SD CARD! Free space is $FREE_SDCARD_SPACE_KB KB, need $HDD_SPACE_THRESHOLD_KB KB" >> $LOG
 		OLDEST_FILE=`ls -1t $DEST_FOLDER | tail -1`
-		echo "$CURRENTDT Will delete oldest file ($DEST_FOLDER$OLDEST_FILE) and continue recording" >> $LOG
+		echo "$CURRENTDT Will delete oldest file ($DEST_FOLDER$OLDEST_FILE) and quit. The script will restart" >> $LOG
 		rm -f $DEST_FOLDER$OLDEST_FILE >> $LOG 2>&1
+		exit 0
 	fi
 
 	auth=$(cat /media/mmcblk0p2/data/etc/rtsp.passwd)
