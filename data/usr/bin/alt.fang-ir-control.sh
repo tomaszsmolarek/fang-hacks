@@ -58,9 +58,9 @@ do
                                 # echo "$CURRENTDT ... image is OK, no action needed" >> /tmp/dark_image_detection.log
                                 IS_DARK_IMAGE = 0 # Can't have empty clause https://unix.stackexchange.com/a/134025
                         else
-                                echo "$CURRENTDT ... image is TOO DARK, will try resetting IR and color" >> /tmp/dark_image_detection.log
+                                # echo "$CURRENTDT ... image is TOO DARK, will try resetting IR and color" >> /tmp/dark_image_detection.log
 
-                                echo 0x0 > /proc/isp/filter/saturation 2>&1 >> /tmp/dark_image_detection.log
+                                echo 0x0 > /proc/isp/filter/saturation
                                 sleep 1
                                 gpio_ms1 -n 2 -m 1 -v 0 2>&1 >> /tmp/dark_image_detection.log
                                 sleep 1
@@ -69,7 +69,7 @@ do
                                 gpio_ms1 -n 2 -m 1 -v 1 2>&1 >> /tmp/dark_image_detection.log
                                 sleep 1
 
-                                echo "$CURRENTDT reset done, all should be good now" >> /tmp/dark_image_detection.log
+                                echo "$CURRENTDT image reset done, all should be good now" >> /tmp/dark_image_detection.log
 
                                 sleep 10
                         fi
